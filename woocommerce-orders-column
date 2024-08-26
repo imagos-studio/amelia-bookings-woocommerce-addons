@@ -1,0 +1,29 @@
+// Orders Column for Amelia Booking Products in Woocommerce
+
+// Populate custom 'Booked' column with product names
+add_action('manage_shop_order_posts_custom_column', 'populate_product_name_column');
+
+function populate_product_name_column($column) {
+    global $post, $the_order;
+
+    if ('product_name' === $column) {
+        $order = wc_get_order($post->ID);
+
+        // Get the list of purchased product names
+        $product_names = array();
+        foreach ($order->get_items() as $item_id => $item) {
+            $product_names[] = $item->get_name();
+        }
+
+        // Output the product names as a comma-separated string
+        echo implode(', ', $product_names);
+    }
+}
+
+// Add custom column to order list
+add_filter('manage_edit-shop_order_columns', 'add_product_name_column');
+
+function add_product_name_column($columns) {
+    $columns['product_name'] = 'Booked';
+    return $columns;
+}
